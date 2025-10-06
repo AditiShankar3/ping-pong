@@ -24,12 +24,30 @@ def main():
     running = True
     while running:
         SCREEN.fill(BLACK)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            # Handle game over menu input
+            if engine.is_game_over():
+                action = engine.handle_game_over_input(event)
+                if action == "exit":
+                    running = False
+                elif action == "continue":
+                    # Game will restart automatically via start_new_game()
+                    pass
+            
+            # Handle ESC during gameplay to quit
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE and not engine.is_game_over():
+                    running = False
 
-        engine.handle_input()
-        engine.update()
+        # Only handle gameplay input if game is not over
+        if not engine.is_game_over():
+            engine.handle_input()
+            engine.update()
+        
         engine.render(SCREEN)
 
         pygame.display.flip()
